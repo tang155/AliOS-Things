@@ -205,6 +205,7 @@ int IOT_Ioctl(int option, void *data)
         case IOTX_IOCTL_SET_AWSS_ENABLE_INTERVAL: {
             uint32_t timeout = *(uint32_t *) data;
             awss_set_press_timeout_ms(timeout);
+            print("jintang awss_set_press_timeout_ms = d% ms\r\n",timeout);
         }
         break;
         case IOTX_IOCTL_SET_AWSS_CHANNEL_SCAN_INTERVAL: {

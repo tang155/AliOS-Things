@@ -538,6 +538,7 @@ static void netmgr_wifi_config_start(void)
     autoconfig_plugin_t *valid_plugin = g_netmgr_cxt.autoconfig_chain;
 
     if (valid_plugin != NULL) {
+        printf("------jintang  valid_plugin->autoconfig_start();\r\n");
         g_netmgr_cxt.doing_smartconfig = true;
         valid_plugin->autoconfig_start();
     } else {
@@ -721,8 +722,10 @@ int netmgr_wifi_init(void)
     g_netmgr_cxt.wifi_hal_mod = module;
 #if !defined(WITH_SAL) || defined(DEV_SAL_ATHOST)
 #if defined(CONFIG_YWSS) && (!defined(CSP_LINUXHOST) || defined(DEV_SAL_ATHOST))
+    printf("add_autoconfig_plugin(&g_alink_smartconfig);\r\n");
     add_autoconfig_plugin(&g_alink_smartconfig);
 #else
+    printf("add_autoconfig_plugin(&g_def_smartconfig);\r\n");
     add_autoconfig_plugin(&g_def_smartconfig);
 #endif
 #endif
@@ -774,7 +777,9 @@ int netmgr_wifi_start(bool autoconfig)
 static int smart_config_start(void)
 {
     extern int awss_start();
+    printf("awss_start();\r\n");
     awss_start();
+    printf("awss_start();  function done\r\n");
     return 0;
 }
 

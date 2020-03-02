@@ -73,6 +73,8 @@ static ota_service_t *ota_get_device_info(void)
 
 static void wifi_service_event(input_event_t *event, void *priv_data)
 {
+    printf("\r\n------jintang wifi_service_event()\r\n");
+
     if (event->type != EV_WIFI) {
         return;
     }
@@ -235,6 +237,7 @@ static void start_netmgr(void *p)
 {
     iotx_event_regist_cb(linkkit_event_monitor);
     LOG("%s\n", __func__);
+
     aos_msleep(2000);
     netmgr_start(true);
     aos_task_exit(0);
@@ -244,7 +247,9 @@ void do_awss_active()
 {
     LOG("do_awss_active %d\n", awss_running);
     awss_running = 1;
+    LOG("------jintang do_awss_active %d\n", awss_running);
 #ifdef WIFI_PROVISION_ENABLED
+    LOG("------jintang WIFI_PROVISION_ENABLED awss_config_press();\n");
     extern int awss_config_press();
     awss_config_press();
 #endif
@@ -511,6 +516,16 @@ int application_start(int argc, char **argv)
     aos_task_new("netmgr_start", start_netmgr, NULL, 5120);
 #endif
 #endif
+    // //下面的代码让设备直接去连接一个指定SSID
+    // #include "network/netmgr/netmgr_wifi.h"
+    // netmgr_ap_config_t config;
+    // strncpy(config.ssid, "5G_TEST", sizeof(config.ssid) - 1);
+    // strncpy(config.pwd, "15980847344", sizeof(config.pwd) - 1);
+    // netmgr_set_ap_config(&config);
+    // netmgr_start(0);//netmgr_start(false);
+    // //上面的代码让设备直接去连接一个指定SSID
+    printf("\r\n------jintang aos_loop_run()\r\n");
+
     aos_loop_run();
 
     return 0;

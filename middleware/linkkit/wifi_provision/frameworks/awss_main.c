@@ -24,8 +24,10 @@ int __awss_start(void)
     uint8_t i;
     awss_stop_connecting = 0;
     awss_finished = 0;
+    printf("\r\n------jintang wifi_service_event()\r\n");
     /* these params is useless, keep it for compatible reason */
     aws_start(NULL, NULL, NULL, NULL);
+    printf("\r\n------jintang aws_start done and  aws_get_ssid_passwd()\r\n");
 
     ret = aws_get_ssid_passwd(&ssid[0], &passwd[0], &bssid[0],&token[0],
                               NULL, NULL, NULL);

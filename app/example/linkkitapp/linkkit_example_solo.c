@@ -25,10 +25,16 @@
 #include "app_entry.h"
 
 // for demo only
-#define PRODUCT_KEY      "a1FxISeKbq9"
-#define PRODUCT_SECRET   "ThNbP5iNUQ1lQe2Q"
-#define DEVICE_NAME      "alen-activate-test"
-#define DEVICE_SECRET    "jcumDL5AJRgU7zRNcCcnHRiQmtii0vDn"
+// #define PRODUCT_KEY      "a1FxISeKbq9"
+// #define PRODUCT_SECRET   "ThNbP5iNUQ1lQe2Q"
+// #define DEVICE_NAME      "alen-activate-test"
+// #define DEVICE_SECRET    "jcumDL5AJRgU7zRNcCcnHRiQmtii0vDn"
+// 廖锦堂 智能卫浴TEST1
+#define PRODUCT_KEY      "a18gLLRjBlh"
+#define PRODUCT_SECRET   "WTsu9dZNhtrWw5Gz"
+#define DEVICE_NAME      "test1"
+#define DEVICE_SECRET    "Noi0LyYFQoeucaQ56yFpVlbzrUhVgbMC"
+
 
 #define EXAMPLE_TRACE(...)                                          \
     do {                                                            \
@@ -285,6 +291,7 @@ int linkkit_main(void *paras)
     int domain_type = 0, dynamic_register = 0, post_reply_need = 0, fota_timeout = 30;
     int   argc = 0;
     char  **argv = NULL;
+    printf("\r\n------jintang linkkit_main\r\n");
 
     if (paras != NULL) {
         argc = ((app_main_paras_t *)paras)->argc;
@@ -338,6 +345,10 @@ int linkkit_main(void *paras)
     IOT_Ioctl(IOTX_IOCTL_RECV_EVENT_REPLY, (void *)&post_reply_need);
 
     IOT_Ioctl(IOTX_IOCTL_FOTA_TIMEOUT_MS, (void *)&fota_timeout);
+
+
+
+    
 #if defined(USE_ITLS)
     {
         char url[128] = {0};

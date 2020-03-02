@@ -12,6 +12,7 @@ int application_start(int argc, char *argv[])
     printf("nano entry here!\r\n");
 
     while(1) {
+        printf("esp8266hellowrold example by 汤 tang155!\r\n");
         printf("hello world! count %d \r\n", count++);
 
         aos_msleep(1000);

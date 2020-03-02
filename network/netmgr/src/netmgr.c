@@ -28,8 +28,11 @@ void netmgr_deinit(void)
 int netmgr_start(bool autoconfig)
 {
 #ifdef NET_WITH_WIFI
+    printf("------jintang  netmgr_wifi_start(autoconfig)\r\n");
     return netmgr_wifi_start(autoconfig);
 #elif defined(NET_WITH_CELLULAR)
+    printf("------jintang  netmgr_cellular_start(autoconfig)\r\n");
+
     return netmgr_cellular_start(autoconfig);
 #endif
 }
