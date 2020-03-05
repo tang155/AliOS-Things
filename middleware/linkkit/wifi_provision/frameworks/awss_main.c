@@ -66,11 +66,12 @@ int __awss_start(void)
             awss_event_post(IOTX_AWSS_CONNECT_ROUTER);
             AWSS_UPDATE_STATIS(AWSS_STATIS_CONN_ROUTER_IDX, AWSS_STATIS_TYPE_TIME_START);
         }
-
+        printf("\r\n------jintang ret = awss_connect(ssid, passwd, bssid, ETH_ALEN, find_token\r\n");
         ret = awss_connect(ssid, passwd, bssid, ETH_ALEN, find_token != 0 ? token : NULL, find_token == 1 ? ZC_MAX_TOKEN_LEN : 0);
         /*ret = HAL_Awss_Connect_Ap(WLAN_CONNECTION_TIMEOUT_MS, ssid, passwd,
                                   auth, encry, bssid, channel);*/
         if (!ret) {
+            printf("\r\n------jintang awss_debug(awss connect ssid:%s success, ssid);\r\n");
             awss_debug("awss connect ssid:%s success", ssid);
             awss_event_post(IOTX_AWSS_GOT_IP);
 

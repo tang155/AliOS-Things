@@ -113,6 +113,7 @@ static void wifi_service_event(input_event_t *event, void *priv_data)
 
 static void cloud_service_event(input_event_t *event, void *priv_data)
 {
+    printf("\r\n------jintang cloud_service_event()\r\n");
     if (event->type != EV_YUNIO) {
         return;
     }
@@ -450,6 +451,7 @@ static void duration_work(void *p)
 
 static int mqtt_connected_event_handler(void)
 {
+    printf("\r\n------jintang mqtt_connected_event_handler()\r\n");
 #ifdef AOS_COMP_UAGENT
     char product_key[IOTX_PRODUCT_KEY_LEN + 1] = {0};
     char device_name[IOTX_DEVICE_NAME_LEN + 1] = {0};

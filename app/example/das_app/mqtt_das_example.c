@@ -268,6 +268,7 @@ do_exit:
 
 int linkkit_main(void *paras)
 {
+    printf("\r\n------jintang linkkit_main() in mqtt_das_example\r\n");
     IOT_SetLogLevel(IOT_LOG_DEBUG);
 
     user_argc = 0;

@@ -1341,7 +1341,7 @@ static int iotx_mc_handle_recv_PUBLISH(iotx_mc_client_t *c)
     json_payload = (const char *)topic_msg.payload;
     mqtt_info("Downstream Topic: '%.*s'", topicName.lenstring.len, topicName.lenstring.data);
     mqtt_info("Downstream Payload:");
-    iotx_facility_json_print(json_payload, LOG_INFO_LEVEL, '<');
+    //uncommet by jintang//iotx_facility_json_print(json_payload, LOG_INFO_LEVEL, '<');
 
 #endif  /* #ifdef INFRA_LOG */
 
@@ -2512,9 +2512,9 @@ int MQTTPublish(iotx_mc_client_t *c, const char *topicName, iotx_mqtt_topic_info
 #ifdef INFRA_LOG_NETWORK_PAYLOAD
     json_payload = (const char *)topic_msg->payload;
 
-    mqtt_info("Upstream Topic: '%s'", topicName);
-    mqtt_info("Upstream Payload:");
-    iotx_facility_json_print(json_payload, LOG_INFO_LEVEL, '>');
+    mqtt_info("Upstream Topic.: '%s'", topicName);//uncommet by jintang//
+    mqtt_info("Upstream Payload.:");
+    //uncommet by jintang//iotx_facility_json_print(json_payload, LOG_INFO_LEVEL, '>');
 
 #endif  /* #ifdef INFRA_LOG */
 

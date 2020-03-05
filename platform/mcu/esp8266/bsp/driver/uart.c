@@ -42,7 +42,8 @@ typedef struct _os_event_ {
 espos_task_t xUartTaskHandle;
 espos_queue_t xQueueUart;
 
-LOCAL STATUS
+//commonby jintang LOCAL STATUS
+STATUS
 uart_tx_one_char(uint8 uart, uint8 TxChar)
 {
     while (true) {

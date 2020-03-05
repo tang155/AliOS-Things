@@ -1692,6 +1692,7 @@ static int _iotx_linkkit_subdev_logout(int devid)
 
 int IOT_Linkkit_Report(int devid, iotx_linkkit_msg_type_t msg_type, unsigned char *payload, int payload_len)
 {
+    printf("\r\n------jintang impl_linkkit.c IOT_Linkkit_Report()\r\n");
     int res = 0;
     iotx_linkkit_ctx_t *ctx = _iotx_linkkit_get_ctx();
 

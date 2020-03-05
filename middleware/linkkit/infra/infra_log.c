@@ -10,6 +10,7 @@
 
 void IOT_SetLogLevel(IOT_LogLevel level)
 {
+    printf("\r\n------jintang infra_log.c IOT_SetLogLevel(%d)\r\n",level);
     int             lvl = (int)level;
     if (level == LOG_NONE_LEVEL) {
         aos_set_log_level((aos_log_level_t)lvl);

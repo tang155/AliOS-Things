@@ -66,7 +66,7 @@ void user_init(void)
 
     key_gpio_init();
     hal_uart_init(&uart_0);
-
+    hal_uart_send(&uart_0,"\x0F\x0F\x0F\x0F\x08\x08\x81\x04",8,1000);//modify by jintang for axent comm
     hal_wifi_register_module(&aos_wifi_esp8266);
     ret = hal_wifi_init();
     if (ret){

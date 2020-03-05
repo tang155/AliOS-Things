@@ -49,6 +49,7 @@ int IOT_Linkkit_Close(int devid)
 
 int IOT_Linkkit_Report(int devid, iotx_linkkit_msg_type_t msg_type, unsigned char *payload, int payload_len)
 {
+    printf("\r\n------jintang Linkkit_usyscall.c IOT_Linkkit_Report()\r\n");
     IOT_Linkkit_Report_syscall_arg_t arg;
 
     arg.devid       = devid;
@@ -101,6 +102,8 @@ int IOT_Linkkit_AnswerService(int devid, char *serviceid, int serviceid_len, cha
 
 void IOT_SetLogLevel(IOT_LogLevel level)
 {
+    printf("\r\n------jintang linkit_usyscall.c IOT_SetLogLevel(%d)\r\n",level);
+
     IOT_SetLogLevel_syscall_arg_t arg;
 
     arg.level = level;

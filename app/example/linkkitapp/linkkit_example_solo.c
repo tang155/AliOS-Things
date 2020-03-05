@@ -60,7 +60,58 @@ typedef struct {
  */
 
 static user_example_ctx_t g_user_example_ctx;
-
+void Serial_write(char* p,int cnt)
+{
+    char i =0;
+    extern void uart_tx_one_char(char uart, char TxChar);
+    for(i=0;i<cnt;i++)
+    {
+        uart_tx_one_char(0,*(p+i));
+    }
+}
+char * serial_data_of_bt_rf_command_excute( char function_code, char value_code)//生成AXENT COM32字节数据
+{
+    static char data_of_bt_rf[32]; 
+  char custom_code = 0X20;
+    data_of_bt_rf[0] = 0X02;
+    data_of_bt_rf[1] = 0X0A;
+    data_of_bt_rf[2] = custom_code;
+    data_of_bt_rf[3] = function_code;
+    data_of_bt_rf[4] = value_code;
+    data_of_bt_rf[5] = function_code+value_code;
+    data_of_bt_rf[6] = 0X00;
+    data_of_bt_rf[7] = 0X00;
+    data_of_bt_rf[8] = 0X00;
+    data_of_bt_rf[9] = 0X00;
+    data_of_bt_rf[10] = 0X00;
+    data_of_bt_rf[11] = 0X00;
+    data_of_bt_rf[12] = 0X00;
+    data_of_bt_rf[13] = 0X00;
+    data_of_bt_rf[14] = 0X00;
+    data_of_bt_rf[15] = 0X00;
+    data_of_bt_rf[16] = 0X00;
+    data_of_bt_rf[17] = 0X00;
+    data_of_bt_rf[18] = 0X00;
+    data_of_bt_rf[19] = 0X00;
+    data_of_bt_rf[20] = 0X00;
+    data_of_bt_rf[21] = 0X00;
+    data_of_bt_rf[22] = 0X00;
+    data_of_bt_rf[23] = 0X00;
+    data_of_bt_rf[24] = 0X00;
+    data_of_bt_rf[25] = 0X00;
+    data_of_bt_rf[26] = 0X00;
+    data_of_bt_rf[27] = 0x49;//标记符 IOT
+    data_of_bt_rf[28] = 0x4F;//标记符 IOT
+    data_of_bt_rf[29] = 0x54;//标记符 IOT
+    unsigned char  i ;
+  for(i=2;i<29;i++)
+    {
+        data_of_bt_rf[29] ^= data_of_bt_rf[i];
+    }
+    data_of_bt_rf[30] = 0X0B;
+    data_of_bt_rf[31] = 0X04;
+    return data_of_bt_rf;
+}  
 
 /** cloud connected event callback */
 static int user_connected_event_handler(void)
@@ -115,11 +166,104 @@ static int user_trigger_event_reply_event_handler(const int devid, const int msg
 static int user_property_set_event_handler(const int devid, const char *request, const int request_len)
 {
     int res = 0;
-    EXAMPLE_TRACE("Property Set Received, Request: %s", request);
+    // EXAMPLE_TRACE("Property Set Received, Request: %s", request);
+    char i =0,temp=0;
+    char *p;
+    // res = IOT_Linkkit_Report(EXAMPLE_MASTER_DEVID, ITM_MSG_POST_PROPERTY,
+    //                          (unsigned char *)request, request_len);
+    // EXAMPLE_TRACE("Post Property Message ID: %d", res);
+    const char * payload = request;
+    if(strstr((char *)payload,"LightSwitch\":1"))
+    { 
+    }
+    else if(strstr((char *)payload,"LightSwitch\":0")) 
+    {  
+    }
+    else if(strstr((char *)payload,"Stop\":")) //停止命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0,0),32);
+    }
+    else if(strstr((char *)payload,"RearWash\":")) //臀洗命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0x31,0x33),32);
+    }
+    else if(strstr((char *)payload,"LadyWash\":")) //妇洗命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0x32,0x33),32);
+    }    
+    else if(strstr((char *)payload,"Dry\":")) //烘干命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0x04,0x33),32);
+    }    
+    else if(strstr((char *)payload,"Nozzle\":")) //喷管位置命令
+    {  
+        p = strstr((char *)payload,"Nozzle\":");
+        temp = *(p+8)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X36,temp),32);
+    }
+    else if(strstr((char *)payload,"WaterTemp\":")) //水温命令
+    {  
+        p = strstr((char *)payload,"WaterTemp\":");
+        temp = *(p+11)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X16,temp),32);    
+    }
+    else if(strstr((char *)payload,"WaterFlow\":")) //流量调节命令
+    {  
+        p = strstr((char *)payload,"WaterFlow\":");
+        temp = *(p+11)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X46,temp),32);    
+    }
+    else if(strstr((char *)payload,"DryTemp\":")) //风温命令
+    {  
+        p = strstr((char *)payload,"DryTemp\":");
+        temp = *(p+9)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X16,temp),32);    
+    }
+    else if(strstr((char *)payload,"SeatTemp\":")) //座温命令
+    {  
+        p = strstr((char *)payload,"SeatTemp\":");
+        temp = *(p+10)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X16,temp),32);    
+    }      
+    else if(strstr((char *)payload,"LidSeatClose\":")) //上盖座圈关闭命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0x07,0x00),32);
+    }    
+    else if(strstr((char *)payload,"LidSeatOpen\":")) //上盖座圈开启命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0x07,0x02),32);
+    }
+    else if(strstr((char *)payload,"LidOpenSeatClose\":")) //上盖开座圈关命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0x07,0x01),32);
+    }
+    else if(strstr((char *)payload,"Flush\":")) //冲刷命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0X09,0x01),32);
+    }
+    else if(strstr((char *)payload,"MassageMove\":")) //移动按摩命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0X15,0x01),32);
+    }
+    else if(strstr((char *)payload,"MassagePulse\":")) //强弱按摩命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0X15,0x02),32);
+    }
+    else if(strstr((char *)payload,"MassageCycle\":")) //强弱按摩命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0X15,0x08),32);
+    }
+    else if(strstr((char *)payload,"DisplayMode\":")) //展厅模式命令
+    {  
+        p = strstr((char *)payload,"DisplayMode\":");
+        temp = *(p+13)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X3B,temp),32);       
+    }
+    else//不能处理的云端数据直接打印出来
+    {
+        EXAMPLE_TRACE("Property Set Received, Request: %s", request);
+    }
 
-    res = IOT_Linkkit_Report(EXAMPLE_MASTER_DEVID, ITM_MSG_POST_PROPERTY,
-                             (unsigned char *)request, request_len);
-    EXAMPLE_TRACE("Post Property Message ID: %d", res);
 
     return 0;
 }
@@ -227,10 +371,10 @@ void user_post_property(void)
     char property_payload[30] = {0};
     HAL_Snprintf(property_payload, sizeof(property_payload), "{\"Counter\": %d}", cnt++);
 
-    res = IOT_Linkkit_Report(EXAMPLE_MASTER_DEVID, ITM_MSG_POST_PROPERTY,
-                             (unsigned char *)property_payload, strlen(property_payload));
+    // res = IOT_Linkkit_Report(EXAMPLE_MASTER_DEVID, ITM_MSG_POST_PROPERTY,
+    //                          (unsigned char *)property_payload, strlen(property_payload));
 
-    EXAMPLE_TRACE("Post Property Message ID: %d", res);
+    // EXAMPLE_TRACE("Post Property Message ID: %d", res);
 }
 
 void user_post_event(void)
@@ -239,9 +383,9 @@ void user_post_event(void)
     char *event_id = "HardwareError";
     char *event_payload = "{\"ErrorCode\": 0}";
 
-    res = IOT_Linkkit_TriggerEvent(EXAMPLE_MASTER_DEVID, event_id, strlen(event_id),
-                                   event_payload, strlen(event_payload));
-    EXAMPLE_TRACE("Post Event Message ID: %d", res);
+    // res = IOT_Linkkit_TriggerEvent(EXAMPLE_MASTER_DEVID, event_id, strlen(event_id),
+    //                                event_payload, strlen(event_payload));
+    // EXAMPLE_TRACE("Post Event Message ID: %d", res);
 }
 
 void user_deviceinfo_update(void)
@@ -312,12 +456,15 @@ int linkkit_main(void *paras)
     memset(&g_user_example_ctx, 0, sizeof(user_example_ctx_t));
 
     memset(&master_meta_info, 0, sizeof(iotx_linkkit_dev_meta_info_t));
+    printf("\r\n------jintang HAL_GetProductKey(master_meta_info.product_key);\r\n");
     HAL_GetProductKey(master_meta_info.product_key);
     HAL_GetDeviceName(master_meta_info.device_name);
     HAL_GetProductSecret(master_meta_info.product_secret);
     HAL_GetDeviceSecret(master_meta_info.device_secret);
 
     IOT_SetLogLevel(IOT_LOG_INFO);
+    IOT_SetLogLevel(IOT_LOG_WARNING);// change by jintang
+
 
     /* Register Callback */
     IOT_RegisterCallback(ITE_CONNECT_SUCC, user_connected_event_handler);
@@ -370,6 +517,8 @@ int linkkit_main(void *paras)
     } while (1);
     /* Start Connect Aliyun Server */
     do {
+        printf("\r\n------jintang IOT_Linkkit_Connect(g_user_example_ctx.master_devid)\r\n");
+
         res = IOT_Linkkit_Connect(g_user_example_ctx.master_devid);
         if (res >= 0) {
             break;
@@ -377,6 +526,7 @@ int linkkit_main(void *paras)
         EXAMPLE_TRACE("IOT_Linkkit_Connect failed! retry after %d ms\n", 5000);
         HAL_SleepMs(5000);
     } while (1);
+    printf("\r\n------jintang IOT_Linkkit_Connect() done %d\r\n",500);
 
     while (1) {
         IOT_Linkkit_Yield(EXAMPLE_YIELD_TIMEOUT_MS);
@@ -398,7 +548,7 @@ int linkkit_main(void *paras)
             break;
         }
     }
-
+    printf("\r\n------jintang IOT_Linkkit_Close(g_user_example_ctx.master_devid);\r\n");
     IOT_Linkkit_Close(g_user_example_ctx.master_devid);
 
     IOT_DumpMemoryStats(IOT_LOG_DEBUG);
