@@ -468,11 +468,11 @@ void aws_start(char *pk, char *dn, char *ds, char *ps)
 
     zconfig_init();
     //以下添加测试按照，开启配网后，模拟按键开始配网解包
-    printf("\r\n------jintang IOT_Ioctl(IOTX_IOCTL_SET_AWSS_ENABLE_INTERVAL, 20001);\r\n");
+    printf("\r\n------add by jintang.liao IOT_Ioctl(IOTX_IOCTL_SET_AWSS_ENABLE_INTERVAL, 20001);\r\n");
     int32_t AWSS_enable_timeout = 20001;
 
     //IOT_Ioctl(IOTX_IOCTL_SET_AWSS_ENABLE_INTERVAL, (void *)&AWSS_enable_timeout);
-    printf("------jintang do_awss_active(); pressed   \r\n");
+    printf("------add by jintang.liao do_awss_active(); pressed   \r\n");
     do_awss_active();
     //以上添加测试按照，开启配网后，模拟按键开始配网解包
 

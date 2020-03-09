@@ -378,6 +378,7 @@ static void handle_devinfo_cmd(char *pwbuf, int blen, int argc, char **argv)
     } else if (strcmp(rtype, "set") == 0) {
         if (argc == 4) {
             set_devinfo(NULL, NULL, argv[2], argv[3]);
+            LOG("devinfo set OK!");//-------add by jintang.liao
         } else if (argc == 5) {
             set_devinfo(argv[2], argv[3], argv[4], "");
         } else if (argc == 6) {

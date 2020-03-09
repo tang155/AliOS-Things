@@ -32,8 +32,8 @@
 // 廖锦堂 智能卫浴TEST1
 #define PRODUCT_KEY      "a18gLLRjBlh"
 #define PRODUCT_SECRET   "WTsu9dZNhtrWw5Gz"
-#define DEVICE_NAME      "test1"
-#define DEVICE_SECRET    "Noi0LyYFQoeucaQ56yFpVlbzrUhVgbMC"
+#define DEVICE_NAME      "test2"
+#define DEVICE_SECRET    "XjoclFWe7A30wDczkJBz28aCVOXOvkLv"
 
 
 #define EXAMPLE_TRACE(...)                                          \
