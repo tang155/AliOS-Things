@@ -144,9 +144,9 @@ static int user_initialized(const int devid)
 static int user_report_reply_event_handler(const int devid, const int msgid, const int code, const char *reply,
         const int reply_len)
 {
-    EXAMPLE_TRACE("Message Post Reply Received, Message ID: %d, Code: %d, Reply: %.*s", msgid, code,
-                  reply_len,
-                  (reply == NULL) ? ("NULL") : (reply));
+    // EXAMPLE_TRACE("Message Post Reply Received, Message ID: %d, Code: %d, Reply: %.*s", msgid, code,
+    //               reply_len,
+    //               (reply == NULL) ? ("NULL") : (reply));
     return 0;
 }
 
@@ -154,10 +154,10 @@ static int user_report_reply_event_handler(const int devid, const int msgid, con
 static int user_trigger_event_reply_event_handler(const int devid, const int msgid, const int code, const char *eventid,
         const int eventid_len, const char *message, const int message_len)
 {
-    EXAMPLE_TRACE("Trigger Event Reply Received, Message ID: %d, Code: %d, EventID: %.*s, Message: %.*s",
-                  msgid, code,
-                  eventid_len,
-                  eventid, message_len, message);
+    // EXAMPLE_TRACE("Trigger Event Reply Received, Message ID: %d, Code: %d, EventID: %.*s, Message: %.*s",
+    //               msgid, code,
+    //               eventid_len,
+    //               eventid, message_len, message);
 
     return 0;
 }
@@ -169,8 +169,8 @@ static int user_property_set_event_handler(const int devid, const char *request,
     // EXAMPLE_TRACE("Property Set Received, Request: %s", request);
     char i =0,temp=0;
     char *p;
-    // res = IOT_Linkkit_Report(EXAMPLE_MASTER_DEVID, ITM_MSG_POST_PROPERTY,
-    //                          (unsigned char *)request, request_len);
+    res = IOT_Linkkit_Report(EXAMPLE_MASTER_DEVID, ITM_MSG_POST_PROPERTY,
+                             (unsigned char *)request, request_len);
     // EXAMPLE_TRACE("Post Property Message ID: %d", res);
     const char * payload = request;
     if(strstr((char *)payload,"LightSwitch\":1"))

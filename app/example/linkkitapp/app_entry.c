@@ -394,7 +394,25 @@ static void handle_devinfo_cmd(char *pwbuf, int blen, int argc, char **argv)
         LOG("devinfo [set pk ps dn ds | set dn ds | get | clean]");
     }
 }
-
+static void handle_send_to_cloud_cmd(char *pwbuf, int blen, int argc, char **argv)//design by jintang.liao 20200311
+{
+    #include "linkkit/dev_model_api.h"
+    const char *rtype = argc > 1 ? argv[1] : "";
+    if((strcmp(rtype, "prop") == 0)&&(argc == 3)){
+        // LOG("send_cloud = %s ,length=%d",property_payload,strlen(property_payload));
+        IOT_Linkkit_Report(0, ITM_MSG_POST_PROPERTY,
+                            (unsigned char *)argv[2], strlen(argv[2]));
+    }
+    else if((strcmp(rtype, "event") == 0) &&(argc == 4))
+    {
+        IOT_Linkkit_TriggerEvent(0, argv[2], strlen(argv[2]),
+                            argv[3], strlen(argv[3]));
+    }
+    else {
+        LOG("usage:");
+        LOG("send [prop jason_strings | event id event_payload]");
+    }
+}
 static void handle_reset_cmd(char *pwbuf, int blen, int argc, char **argv)
 {
     aos_schedule_call(do_awss_reset, NULL);
@@ -439,6 +457,10 @@ static struct cli_command resetcmd = { .name     = "reset",
 static struct cli_command awss_enable_cmd = { .name     = "active_awss",
     .help     = "active_awss [start]",
      .function = handle_active_cmd
+};
+static struct cli_command send_to_cloud_cmd = { .name     = "send",
+    .help     = "send [data]",
+     .function = handle_send_to_cloud_cmd
 };
 #endif
 
@@ -503,6 +525,7 @@ int application_start(int argc, char **argv)
     aos_cli_register_command(&devinfo_cmd);
     aos_cli_register_command(&resetcmd);
     aos_cli_register_command(&awss_enable_cmd);
+    aos_cli_register_command(&send_to_cloud_cmd);   
 #ifdef AWSS_SUPPORT_DEV_AP
     aos_cli_register_command(&awss_dev_ap_cmd);
     aos_cli_register_command(&awss_cmd);

@@ -49,7 +49,6 @@ int IOT_Linkkit_Close(int devid)
 
 int IOT_Linkkit_Report(int devid, iotx_linkkit_msg_type_t msg_type, unsigned char *payload, int payload_len)
 {
-    printf("\r\n------jintang Linkkit_usyscall.c IOT_Linkkit_Report()\r\n");
     IOT_Linkkit_Report_syscall_arg_t arg;
 
     arg.devid       = devid;
