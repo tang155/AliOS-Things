@@ -249,7 +249,7 @@ static int user_property_set_event_handler(const int devid, const char *request,
     {  
         Serial_write(serial_data_of_bt_rf_command_excute(0X15,0x02),32);
     }
-    else if(strstr((char *)payload,"MassageCycle\":")) //强弱按摩命令
+    else if(strstr((char *)payload,"MassageCycle\":")) //循环按摩命令
     {  
         Serial_write(serial_data_of_bt_rf_command_excute(0X15,0x08),32);
     }
@@ -261,7 +261,7 @@ static int user_property_set_event_handler(const int devid, const char *request,
     }
     else//不能处理的云端数据直接打印出来
     {
-        EXAMPLE_TRACE("Property Set Received, Request: %s", request);
+        EXAMPLE_TRACE("Property Set Received, Request: %s", payload);
     }
 
 
@@ -277,45 +277,89 @@ static int user_service_request_event_handler(const int devid, const char *servi
     int ret = -1;
     cJSON *root = NULL, *item_number_a = NULL, *item_number_b = NULL;
     const char *response_fmt = "{\"Result\": %d}";
-    EXAMPLE_TRACE("Service Request Received, Service ID: %.*s, Payload: %s", serviceid_len, serviceid, request);
+    // EXAMPLE_TRACE("Service Request Received, Service ID: %s, Payload: %s", serviceid, request);
 
-    /* Parse Root */
-    root = cJSON_Parse(request);
-    if (root == NULL || !cJSON_IsObject(root)) {
-        EXAMPLE_TRACE("JSON Parse Error");
-        return -1;
+    // /* Parse Root */
+    // root = cJSON_Parse(request);
+    // if (root == NULL || !cJSON_IsObject(root)) {
+    //     EXAMPLE_TRACE("JSON Parse Error");
+    //     return -1;
+    // }
+    // do{
+    //     if (strlen("Operation_Service") == serviceid_len && memcmp("Operation_Service", serviceid, serviceid_len) == 0) {
+    //         /* Parse NumberA */
+    //         item_number_a = cJSON_GetObjectItem(root, "NumberA");
+    //         if (item_number_a == NULL || !cJSON_IsNumber(item_number_a)) {
+    //             break;
+    //         }
+    //         EXAMPLE_TRACE("NumberA = %d", item_number_a->valueint);
+
+    //         /* Parse NumberB */
+    //         item_number_b = cJSON_GetObjectItem(root, "NumberB");
+    //         if (item_number_b == NULL || !cJSON_IsNumber(item_number_b)) {
+    //             break;
+    //         }
+    //         EXAMPLE_TRACE("NumberB = %d", item_number_b->valueint);
+    //         add_result = item_number_a->valueint + item_number_b->valueint;
+    //         ret = 0;
+    //         /* Send Service Response To Cloud */
+    //     }
+    // }while(0);
+
+    // *response_len = strlen(response_fmt) + 10 + 1;
+    // *response = (char *)HAL_Malloc(*response_len);
+    // if (*response != NULL) {
+    //     memset(*response, 0, *response_len);
+    //     HAL_Snprintf(*response, *response_len, response_fmt, add_result);
+    //     *response_len = strlen(*response);
+    // }
+
+    // cJSON_Delete(root);
+    // return ret;
+    ret = 0;
+    if(strstr((char *)serviceid,"LidAndSeatClose")) //全关命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0x07,0x00),32);
+    }    
+    else if(strstr((char *)serviceid,"LidOpenAndSeatClose")) //半开命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0x07,0x01),32);
     }
-    do{
-        if (strlen("Operation_Service") == serviceid_len && memcmp("Operation_Service", serviceid, serviceid_len) == 0) {
-            /* Parse NumberA */
-            item_number_a = cJSON_GetObjectItem(root, "NumberA");
-            if (item_number_a == NULL || !cJSON_IsNumber(item_number_a)) {
-                break;
-            }
-            EXAMPLE_TRACE("NumberA = %d", item_number_a->valueint);
-
-            /* Parse NumberB */
-            item_number_b = cJSON_GetObjectItem(root, "NumberB");
-            if (item_number_b == NULL || !cJSON_IsNumber(item_number_b)) {
-                break;
-            }
-            EXAMPLE_TRACE("NumberB = %d", item_number_b->valueint);
-            add_result = item_number_a->valueint + item_number_b->valueint;
-            ret = 0;
-            /* Send Service Response To Cloud */
-        }
-    }while(0);
-
-    *response_len = strlen(response_fmt) + 10 + 1;
-    *response = (char *)HAL_Malloc(*response_len);
-    if (*response != NULL) {
-        memset(*response, 0, *response_len);
-        HAL_Snprintf(*response, *response_len, response_fmt, add_result);
-        *response_len = strlen(*response);
+    else if(strstr((char *)serviceid,"LidAndSeatOpen")) //全开命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0x07,0x02),32);
+    }    
+    else if(strstr((char *)serviceid,"StopService")) //停止命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0,0),32);
     }
+    else if(strstr((char *)serviceid,"RearWashService")) //臀洗命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0x31,0x33),32);
+    }
+    else if(strstr((char *)serviceid,"LadyWashService")) //妇洗命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0x32,0x33),32);
+    }    
+    else if(strstr((char *)serviceid,"DryService")) //烘干命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0x04,0x33),32);
+    }      
+    else if(strstr((char *)serviceid,"FlushService")) //冲刷命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0X09,0x01),32);
+    }
+    else if(strstr((char *)serviceid,"MassageCycleService")) //循环按摩命令
+    {  
+        Serial_write(serial_data_of_bt_rf_command_excute(0X15,0x08),32);
+    }
+    else
+    {
+        ret = -1;
+        EXAMPLE_TRACE("Service Request Received, Service ID: %s, Payload: %s", serviceid, request);
+    }
+    
 
-    cJSON_Delete(root);
-    return ret;
 }
 
 static int user_timestamp_reply_event_handler(const char *timestamp)
