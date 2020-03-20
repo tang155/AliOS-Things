@@ -26,8 +26,10 @@ OTA_WEAK int ota_hal_init(ota_boot_param_t *param)
         hal_logic_partition_t *p_part_info;
         p_part_info = &part_info;
         memset(p_part_info, 0, sizeof(hal_logic_partition_t));
+        OTA_LOG_I("--jintang,hal_flash_info_get(boot_part, p_part_info)");
         ret = hal_flash_info_get(boot_part, p_part_info);
         if(ret != 0 || p_part_info->partition_length < param->len || param->len == 0) {
+            OTA_LOG_I("--jintang,hal_flash_info_get() ret=%d,partition_length=%d,param_lenth=%d",ret,p_part_info->partition_length ,param->len);
             ret = OTA_INIT_FAIL;
         }
         else {
@@ -36,6 +38,7 @@ OTA_WEAK int ota_hal_init(ota_boot_param_t *param)
             ota_cache = ota_malloc(OTA_FLASH_WRITE_CACHE_SIZE);
             if (NULL == ota_cache) {
                 ret = OTA_INIT_FAIL;
+                OTA_LOG_I("--jintang,ota_malloc() fail");
             }
             else {
                 ret = hal_flash_erase(boot_part, ota_receive_total_len, p_part_info->partition_length);

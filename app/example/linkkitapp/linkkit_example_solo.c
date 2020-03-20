@@ -38,9 +38,9 @@
 
 #define EXAMPLE_TRACE(...)                                          \
     do {                                                            \
-        HAL_Printf("\033[1;32;40m%s.%d: ", __func__, __LINE__);     \
+        HAL_Printf("\033[1;32;40:%s.%d: ", __func__, __LINE__);     \
         HAL_Printf(__VA_ARGS__);                                    \
-        HAL_Printf("\033[0m\r\n");                                  \
+        HAL_Printf("]\r\n");                                  \
     } while (0)
 
 #define EXAMPLE_MASTER_DEVID            (0)
@@ -72,7 +72,7 @@ void Serial_write(char* p,int cnt)
 char * serial_data_of_bt_rf_command_excute( char function_code, char value_code)//生成AXENT COM32字节数据
 {
     static char data_of_bt_rf[32]; 
-  char custom_code = 0X20;
+  char custom_code = 0X30;
     data_of_bt_rf[0] = 0X02;
     data_of_bt_rf[1] = 0X0A;
     data_of_bt_rf[2] = custom_code;
@@ -173,32 +173,26 @@ static int user_property_set_event_handler(const int devid, const char *request,
                              (unsigned char *)request, request_len);
     // EXAMPLE_TRACE("Post Property Message ID: %d", res);
     const char * payload = request;
-    if(strstr((char *)payload,"LightSwitch\":1"))
-    { 
-    }
-    else if(strstr((char *)payload,"LightSwitch\":0")) 
-    {  
-    }
-    else if(strstr((char *)payload,"Stop\":")) //停止命令
+    if(strstr((char *)payload,"Stop\":")) //停止命令
     {  
         Serial_write(serial_data_of_bt_rf_command_excute(0,0),32);
     }
     else if(strstr((char *)payload,"RearWash\":")) //臀洗命令
     {  
-        Serial_write(serial_data_of_bt_rf_command_excute(0x31,0x33),32);
+        Serial_write(serial_data_of_bt_rf_command_excute(0x61,0x66),32);
     }
     else if(strstr((char *)payload,"LadyWash\":")) //妇洗命令
     {  
-        Serial_write(serial_data_of_bt_rf_command_excute(0x32,0x33),32);
+        Serial_write(serial_data_of_bt_rf_command_excute(0x62,0x66),32);
     }    
     else if(strstr((char *)payload,"Dry\":")) //烘干命令
     {  
-        Serial_write(serial_data_of_bt_rf_command_excute(0x04,0x33),32);
+        Serial_write(serial_data_of_bt_rf_command_excute(0x04,0x66),32);
     }    
     else if(strstr((char *)payload,"Nozzle\":")) //喷管位置命令
     {  
         p = strstr((char *)payload,"Nozzle\":");
-        temp = *(p+8)-0x30;
+        temp = *(p+8)-0x30 - 1;
         Serial_write(serial_data_of_bt_rf_command_excute(0X36,temp),32);
     }
     else if(strstr((char *)payload,"WaterTemp\":")) //水温命令
@@ -210,20 +204,20 @@ static int user_property_set_event_handler(const int devid, const char *request,
     else if(strstr((char *)payload,"WaterFlow\":")) //流量调节命令
     {  
         p = strstr((char *)payload,"WaterFlow\":");
-        temp = *(p+11)-0x30;
+        temp = *(p+11)-0x30 - 1;
         Serial_write(serial_data_of_bt_rf_command_excute(0X46,temp),32);    
     }
     else if(strstr((char *)payload,"DryTemp\":")) //风温命令
     {  
         p = strstr((char *)payload,"DryTemp\":");
         temp = *(p+9)-0x30;
-        Serial_write(serial_data_of_bt_rf_command_excute(0X16,temp),32);    
+        Serial_write(serial_data_of_bt_rf_command_excute(0X06,temp),32);    
     }
     else if(strstr((char *)payload,"SeatTemp\":")) //座温命令
     {  
         p = strstr((char *)payload,"SeatTemp\":");
         temp = *(p+10)-0x30;
-        Serial_write(serial_data_of_bt_rf_command_excute(0X16,temp),32);    
+        Serial_write(serial_data_of_bt_rf_command_excute(0X26,temp),32);    
     }      
     else if(strstr((char *)payload,"LidSeatClose\":")) //上盖座圈关闭命令
     {  
@@ -259,9 +253,35 @@ static int user_property_set_event_handler(const int devid, const char *request,
         temp = *(p+13)-0x30;
         Serial_write(serial_data_of_bt_rf_command_excute(0X3B,temp),32);       
     }
+    else if(strstr((char *)payload,"NightLamp\":")) //夜灯设置命令
+    {  
+        p = strstr((char *)payload,"NightLamp\":");
+        temp = *(p+11)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X5A,temp),32);       
+    }
+    else if(strstr((char *)payload,"CoversAutoOpen\":")) //自动翻盖设置命令
+    {  
+        p = strstr((char *)payload,"CoversAutoOpen\":");
+        temp = *(p+16)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X77,temp),32);       
+    }
+    else if(strstr((char *)payload,"AutoFlush\":")) //自动冲刷设置命令
+    {  
+        p = strstr((char *)payload,"AutoFlush\":");
+        temp = *(p+11)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X29,temp),32);       
+    }
+    else if(strstr((char *)payload,"AutoDeo\":")) //自动除臭设置命令
+    {  
+        p = strstr((char *)payload,"AutoDeo\":");
+        temp = *(p+9)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X4A,temp),32);       
+    }
     else//不能处理的云端数据直接打印出来
     {
-        EXAMPLE_TRACE("Property Set Received, Request: %s", payload);
+        // EXAMPLE_TRACE("Property Set Received, Request: %s", payload);
+        printf("Property Set Received: %s\r\n", payload);
+
     }
 
 
@@ -356,7 +376,8 @@ static int user_service_request_event_handler(const int devid, const char *servi
     else
     {
         ret = -1;
-        EXAMPLE_TRACE("Service Request Received, Service ID: %s, Payload: %s", serviceid, request);
+        // EXAMPLE_TRACE("Service Request Received, Service ID: %s, Payload: %s", serviceid, request);
+        printf("Service Received, SID: %s,Request: %s\r\n", serviceid, request);
     }
     
 
