@@ -20,11 +20,11 @@ else
 	OBJDUMP = xtensa-lx106-elf-objdump
 endif
 
-BOOT?=none
-APP?=0
+BOOT?=new
+APP?=2
 SPI_SPEED?=40
 SPI_MODE?=QIO
-SPI_SIZE_MAP?=0
+SPI_SIZE_MAP?=6
 
 ifeq ($(BOOT), new)
     boot = new

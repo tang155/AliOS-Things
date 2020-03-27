@@ -232,7 +232,7 @@ system_upgrade_init(void)
           upgrade->fw_bin_sec_num = 59;
           break;
     }
-   
+    LOG("---jintang，system_upgrade_userbin_check = %d",system_upgrade_userbin_check());
     upgrade->fw_bin_sec = (system_upgrade_userbin_check() == USER_BIN1) ? user_bin2_start : user_bin1_start;
 
     upgrade->fw_bin_addr = upgrade->fw_bin_sec * SPI_FLASH_SEC_SIZE;

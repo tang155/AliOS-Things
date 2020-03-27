@@ -16,7 +16,8 @@
         "initializer_list": "c",
         "regex": "c",
         "utility": "c",
-        "valarray": "c"
+        "valarray": "c",
+        "infra_defs.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

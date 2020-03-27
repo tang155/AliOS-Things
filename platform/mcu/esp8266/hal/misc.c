@@ -39,16 +39,21 @@ void hal_reboot(void)
 
 int hal_reboot_bank(void)
 {
-    printf("reboot to banker\n");
+    printf("reboot to banker \n");
     wifi_set_sleep_type(NONE_SLEEP_T);
+    printf("----jintang probe  ota_msleep(300)\n");
     ota_msleep(300);
+    printf("----jintang probe system_upgrade_init()\n");
     system_upgrade_init();
+    // printf("----jintang probe system_upgrade_flag_set()\n");
     system_upgrade_flag_set(UPGRADE_FLAG_FINISH);
+    // printf("----jintang probe reboot to banker,before while(1)\n");
     while(1) {
         system_upgrade_process();
         system_restart_in_nmi();
         aos_msleep(1000);
     }
+    // printf("----jintang probe reboot to banker,before system_upgrade_reboot()\n");
     system_upgrade_reboot();
     return 0;
 }

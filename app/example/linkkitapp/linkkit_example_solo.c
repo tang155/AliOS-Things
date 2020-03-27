@@ -231,9 +231,11 @@ static int user_property_set_event_handler(const int devid, const char *request,
     {  
         Serial_write(serial_data_of_bt_rf_command_excute(0x07,0x01),32);
     }
-    else if(strstr((char *)payload,"Flush\":")) //冲刷命令
-    {  
-        Serial_write(serial_data_of_bt_rf_command_excute(0X09,0x01),32);
+    else if(strstr((char *)payload,"AutoFlush\":")) //冲刷命令
+    {          
+        p = strstr((char *)payload,"AutoFlush\":");
+        temp = *(p+11)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X29,temp),32);    
     }
     else if(strstr((char *)payload,"MassageMove\":")) //移动按摩命令
     {  
