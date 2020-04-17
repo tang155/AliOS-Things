@@ -17,7 +17,8 @@
         "regex": "c",
         "utility": "c",
         "valarray": "c",
-        "infra_defs.h": "c"
+        "infra_defs.h": "c",
+        "cli_adapt.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

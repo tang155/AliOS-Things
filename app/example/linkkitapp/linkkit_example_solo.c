@@ -30,10 +30,10 @@
 // #define DEVICE_NAME      "alen-activate-test"
 // #define DEVICE_SECRET    "jcumDL5AJRgU7zRNcCcnHRiQmtii0vDn"
 // 廖锦堂 智能卫浴TEST1
-#define PRODUCT_KEY      "a18gLLRjBlh"
-#define PRODUCT_SECRET   "WTsu9dZNhtrWw5Gz"
-#define DEVICE_NAME      "test2"
-#define DEVICE_SECRET    "XjoclFWe7A30wDczkJBz28aCVOXOvkLv"
+#define PRODUCT_KEY      "a1UW1xMD00k"
+#define PRODUCT_SECRET   "MX4gqOyrVhP5D1MH"
+#define DEVICE_NAME      "jintang01"
+#define DEVICE_SECRET    "tuGvJDh5ehjoORlv9DzVTPOtmlH58bVt"
 
 
 #define EXAMPLE_TRACE(...)                                          \
@@ -67,6 +67,31 @@ void Serial_write(char* p,int cnt)
     for(i=0;i<cnt;i++)
     {
         uart_tx_one_char(0,*(p+i));
+    }
+}
+uint8_t tub_faucet = 0;//浴缸龙头开关
+uint8_t tub_shower = 0;//浴缸花洒开关
+uint8_t tub_drain = 0;//浴缸排水开关
+uint16_t tub_temp = 15;//浴缸水温
+uint8_t tub_lock = 0;//浴缸童锁开关
+
+#include "aos/hal/uart.h"
+uint32_t Serial_read(char* inbuf,int cnt)
+{
+    uart_dev_t uart_stdio;
+
+    int32_t  ret       = 0;
+    uint32_t recv_size = 0;
+
+    memset(&uart_stdio, 0, sizeof(uart_dev_t));
+    uart_stdio.port = 0;
+
+    ret = hal_uart_recv_II(&uart_stdio, inbuf, cnt, &recv_size, 200);
+
+    if ((ret == 0) && (recv_size !=0)) {
+        return recv_size;
+    } else {
+        return 0;
     }
 }
 char * serial_data_of_bt_rf_command_excute( char function_code, char value_code)//生成AXENT COM32字节数据
@@ -195,7 +220,7 @@ static int user_property_set_event_handler(const int devid, const char *request,
         temp = *(p+8)-0x30 - 1;
         Serial_write(serial_data_of_bt_rf_command_excute(0X36,temp),32);
     }
-    else if(strstr((char *)payload,"WaterTemp\":")) //水温命令
+    else if(strstr((char *)payload,"\"WaterTemp\":")) //水温命令
     {  
         p = strstr((char *)payload,"WaterTemp\":");
         temp = *(p+11)-0x30;
@@ -279,6 +304,33 @@ static int user_property_set_event_handler(const int devid, const char *request,
         temp = *(p+9)-0x30;
         Serial_write(serial_data_of_bt_rf_command_excute(0X4A,temp),32);       
     }
+    //一下为浴缸等其他数据处理
+    else if(strstr((char *)payload,"Faucet\":")) //浴缸龙头开关命令
+    {  
+        p = strstr((char *)payload,"Faucet\":");
+        tub_faucet = *(p+8)-0x30;
+    }
+    else if(strstr((char *)payload,"Shower\":")) //浴缸花洒开关命令
+    {  
+        p = strstr((char *)payload,"Shower\":");
+        tub_shower = *(p+8)-0x30;
+    }
+    else if(strstr((char *)payload,"Drain\":")) //浴缸排水开关命令
+    {  
+        p = strstr((char *)payload,"Drain\":");
+        tub_drain = *(p+7)-0x30;
+    }
+    else if(strstr((char *)payload,"TubWaterTemp\":")) //浴缸水温命令
+    {  
+        p = strstr((char *)payload,"TubWaterTemp\":");
+        tub_temp = ((*(p+14)-0x30)*10) + (*(p+15)-0x30);
+    }    
+    else if(strstr((char *)payload,"TubLock\":")) //浴缸水温命令
+    {  
+        p = strstr((char *)payload,"TubLock\":");
+        tub_lock = *(p+9)-0x30;
+    }
+    
     else//不能处理的云端数据直接打印出来
     {
         // EXAMPLE_TRACE("Property Set Received, Request: %s", payload);
@@ -593,10 +645,113 @@ int linkkit_main(void *paras)
         EXAMPLE_TRACE("IOT_Linkkit_Connect failed! retry after %d ms\n", 5000);
         HAL_SleepMs(5000);
     } while (1);
-    printf("\r\n------jintang IOT_Linkkit_Connect() done %d\r\n",500);
-
+    printf("------jintang IOT_Linkkit_Connect() done %d\r\n",500);
+    printf("------jintang cli_task_cancel\r\n");
+    cli_task_cancel();//jintang modify for malta 云浴缸
     while (1) {
-        IOT_Linkkit_Yield(EXAMPLE_YIELD_TIMEOUT_MS);
+        static uint8_t temp[32];
+        uint8_t recv_cnt = 0;
+        int res = 0;
+        char property_payload[30] = {0};
+        // IOT_Linkkit_Yield(EXAMPLE_YIELD_TIMEOUT_MS);        
+        IOT_Linkkit_Yield(10);
+        recv_cnt=Serial_read(temp,32);//jintang modify for malta 云浴缸
+        if(recv_cnt!=0)
+        {
+            if((temp[0] == 0x02)&&(temp[1] == 0x3a)&&(temp[2] == 0x03)) //浴缸32字节命令
+            {
+                 if((temp[3] == 0xff)&&(temp[4] == 0x01))
+                {
+                    printf("do_awss_reset()");//---jintang modify
+                    extern  void do_awss_reset();
+                    do_awss_reset();
+                }
+                else if((temp[3] == 0x00))//查询命令
+                {
+                    if(tub_faucet < 5)//龙头新命令
+                    {
+                        temp[3] = 0x01;
+                        temp[4] = tub_faucet;
+                        tub_faucet += 100;//＋100表示命令已经处理了
+                    }
+                    else if(tub_shower < 5)//花洒新命令
+                    {
+                        temp[3] = 0x01;
+                        temp[4] = tub_shower ?  2 : 0;
+                        tub_shower += 100;//＋100表示命令已经处理了
+                    }
+                    else if(tub_drain < 5)//排水新命令
+                    {
+                        temp[3] = 0x02;
+                        temp[4] = tub_drain;
+                        tub_drain += 100;//＋100表示命令已经处理了
+                    }
+                    else if(tub_temp < 80)//温度设置新命令
+                    {
+                        temp[3] = 0x04;
+                        temp[4] = 00;
+                        temp[5] = (tub_temp*10)>>8;
+                        temp[6] = (tub_temp*10);
+                        tub_temp *= 10;//＋100表示命令已经处理了
+                    }
+                    else if(tub_lock < 5)//童锁设置新命令
+                    {
+                        temp[3] = 0x09;
+                        temp[4] = tub_lock;
+                        tub_lock += 100;//＋100表示命令已经处理了
+                    }
+                    else
+                    {
+                        if((temp[12] & 0x01) != (tub_faucet -100))//本地出水发生变化
+                        {
+                            tub_faucet = (temp[12] & 0x01)? 101:100;
+                            HAL_Snprintf(property_payload, sizeof(property_payload), "{\"Faucet\":%d}",(temp[12] & 0x01)? 1:0);
+                            res = IOT_Linkkit_Report(EXAMPLE_MASTER_DEVID, ITM_MSG_POST_PROPERTY,
+                                (unsigned char *)property_payload, strlen(property_payload));
+                        }
+                        if((temp[12] & 0x02) != (tub_shower -100))//本地出水发生变化
+                        {
+                            tub_shower = (temp[12] & 0x02)? 101:100;
+                            HAL_Snprintf(property_payload, sizeof(property_payload), "{\"Shower\":%d}",(temp[12] & 0x02)? 1:0);
+                            res = IOT_Linkkit_Report(EXAMPLE_MASTER_DEVID, ITM_MSG_POST_PROPERTY,
+                                (unsigned char *)property_payload, strlen(property_payload));
+                        }
+                        if((temp[15] & 0x01) != (tub_drain -100))//本地排水发生变化
+                        {                        
+                            tub_drain = (temp[15] & 0x01)? 101:100;
+                            HAL_Snprintf(property_payload, sizeof(property_payload), "{\"Drain\":%d}",(temp[15] & 0x01)? 1:0);
+                            res = IOT_Linkkit_Report(EXAMPLE_MASTER_DEVID, ITM_MSG_POST_PROPERTY,
+                                (unsigned char *)property_payload, strlen(property_payload));
+                        }
+                        if(((temp[5] << 8) + temp[6])!= tub_temp)//本地温度发生变化
+                        {
+                            tub_temp = ((temp[5] << 8) + temp[6]);
+                            HAL_Snprintf(property_payload, sizeof(property_payload), "{\"TubWaterTemp\": %d}", tub_temp/10);
+                            res = IOT_Linkkit_Report(EXAMPLE_MASTER_DEVID, ITM_MSG_POST_PROPERTY,
+                                                (unsigned char *)property_payload, strlen(property_payload));
+                        }
+                        if((temp[17] & 0x01) != (tub_lock -100))//本地童锁发生变化
+                        {                        
+                            tub_lock = (temp[17] & 0x01)? 101:100;
+                            HAL_Snprintf(property_payload, sizeof(property_payload), "{\"TubLock\":%d}",(temp[17] & 0x01)? 1:0);
+                            res = IOT_Linkkit_Report(EXAMPLE_MASTER_DEVID, ITM_MSG_POST_PROPERTY,
+                                                    (unsigned char *)property_payload, strlen(property_payload));
+                        }
+                    }
+                }
+                
+                temp[29] = 0;
+                uint8_t i;
+                for(i=2;i<29;i++)
+                {
+                    temp[29] ^= temp[i];
+                }
+                temp[1] = 0xa3;
+                temp[30] = 0x0f;
+                temp[31] = 0x04;
+                Serial_write(temp,32);      
+            }
+        }
 
         /* Post Proprety Example */
 
@@ -608,9 +763,7 @@ int linkkit_main(void *paras)
         if ((cnt % 50) == 0) {
             user_post_event();
         }
-
         cnt++;
-
         if (auto_quit == 1 && cnt > 3600) {
             break;
         }

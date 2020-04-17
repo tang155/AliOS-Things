@@ -1,0 +1,43 @@
+#
+# The configs required by AliOS Things
+#
+config AOS_BUILD_BOARD
+    string
+    default "esp8266"
+
+config AOS_BUILD_APP
+    string
+    default "axent_malta_bathtub"
+
+config AOS_SDK_PATH
+    string
+    default "D:/TANGLE/PROJECT/AXENT_OS/IOT/deviceSDK/AliOS-Things_alibaba"
+
+#
+# The configs for app axent_malta_bathtub
+#
+config AOS_APP_AXENT_MALTA_BATHTUB
+    bool "AOS_APP_AXENT_MALTA_BATHTUB"
+    default y
+
+if AOS_APP_AXENT_MALTA_BATHTUB
+# Add more configs here ...
+endif
+
+source "$AOS_SDK_PATH/3rdparty/experimental/fs/fatfs/Config.in"
+source "$AOS_SDK_PATH/3rdparty/experimental/fs/spiffs/Config.in"
+source "$AOS_SDK_PATH/board/esp8266/Config.in"
+source "$AOS_SDK_PATH/kernel/debug/Config.in"
+source "$AOS_SDK_PATH/kernel/fs/kv/Config.in"
+source "$AOS_SDK_PATH/kernel/fs/vfs/Config.in"
+source "$AOS_SDK_PATH/kernel/init/Config.in"
+source "$AOS_SDK_PATH/kernel/rhino/Config.in"
+source "$AOS_SDK_PATH/middleware/uagent/ulog/Config.in"
+source "$AOS_SDK_PATH/network/lwip/Config.in"
+source "$AOS_SDK_PATH/network/netmgr/Config.in"
+source "$AOS_SDK_PATH/network/yloop/Config.in"
+source "$AOS_SDK_PATH/osal/aos/Config.in"
+source "$AOS_SDK_PATH/platform/arch/xtensa/lx106/Config.in"
+source "$AOS_SDK_PATH/platform/mcu/esp8266/Config.in"
+source "$AOS_SDK_PATH/utility/libc/Config.in"
+source "$AOS_SDK_PATH/utility/mbedtls/Config.in"

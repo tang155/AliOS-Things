@@ -93,7 +93,7 @@ int32_t uart_receive_buffer_queue(uint8_t *data)
     int32_t ret = 0;
     char uart_data = 0;
 
-    ret = krhino_buf_queue_recv(&g_buf_queue_uart, 0x10, data, &rev_size);
+    ret = krhino_buf_queue_recv(&g_buf_queue_uart, 0x08, data, &rev_size);//jintang，接收100ms速率时ticks不能大于0x08.
 
     return ret;
 }

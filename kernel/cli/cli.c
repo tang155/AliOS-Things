@@ -523,14 +523,16 @@ static int32_t cli_get_input(char *inbuf, uint32_t *bp)
             return 1;
         }
 
-        if (c == 0x1b) { /* escape sequence */
+        // if (c == 0x1b) { /* escape sequence */
+        if (0) { /* CTRL+C *///-------modify by jintang for tub communication
             esc  = 1;
             key1 = -1;
             key2 = -1;
             continue;
         }
 
-        if (c == 0x3) { /* CTRL+C */
+        // if (c == 0x3) { /* CTRL+C */ //-------modify by jintang for tub communication
+        if (0) { /* CTRL+C *///-------modify by jintang for tub communication
             task_to_cancel = debug_task_find("cpuusage");
             if (task_to_cancel != NULL) {
                 krhino_task_cancel(task_to_cancel);
@@ -665,7 +667,21 @@ static int32_t cli_get_input(char *inbuf, uint32_t *bp)
             *bp = 0;
             return 0;
         }
+        if (*bp == 5) {//-------create by jintang for tub communication
+            if((inbuf[0]==0x02)
+                &&(inbuf[1]==0x3A)
+                &&(inbuf[2]==0x03)
+                &&(inbuf[3]==0xFF)
+                &&(inbuf[4]==0x01)
+            )
+            {
+                printf("do_awss_reset()");//---jintang modify
+                extern  void do_awss_reset();
+                do_awss_reset();
+            }
+        }
     }
+    *bp = 0;//-------add by jintang for tub communication
 
     return 0;
 }
@@ -724,10 +740,10 @@ void cli_main(void *data)
                 cli_printf("syntax error\r\n");
             }
 
-            cli_printf("\r\n");
+            // cli_printf("\r\n");//----- comment by jintang for tub communication
             g_cli_tag[0]  = '\x0';
             g_cli_tag_len = 0;
-            cli_printf(PROMPT);
+            // cli_printf(PROMPT);//----- comment by jintang for tub communication
         }
     }
 
@@ -820,7 +836,7 @@ int32_t cli_init(void)
 #endif
 
     g_cli->inited        = 1;
-    g_cli->echo_disabled = 0;
+    g_cli->echo_disabled = 1;//----jintang modify 0 to 1
 
     ret = cli_register_default_commands();
     if (ret != CLI_OK) {

@@ -305,7 +305,7 @@ static void linkkit_reset(void *p)
 
 
 extern int  awss_report_reset();
-static void do_awss_reset()
+ void do_awss_reset()
 {
 #ifdef WIFI_PROVISION_ENABLED
     aos_task_new("reset", (void (*)(void *))awss_report_reset, NULL, 6144);
