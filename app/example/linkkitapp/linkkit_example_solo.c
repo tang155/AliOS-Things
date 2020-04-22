@@ -297,6 +297,8 @@ static int user_service_request_event_handler(const int devid, const char *servi
 {
     int add_result = 0;
     int ret = -1;
+    char i =0,temp=0;
+    char *p;
     cJSON *root = NULL, *item_number_a = NULL, *item_number_b = NULL;
     const char *response_fmt = "{\"Result\": %d}";
     // EXAMPLE_TRACE("Service Request Received, Service ID: %s, Payload: %s", serviceid, request);
@@ -375,6 +377,11 @@ static int user_service_request_event_handler(const int devid, const char *servi
     {  
         Serial_write(serial_data_of_bt_rf_command_excute(0X15,0x08),32);
     }
+    else if(strstr((char *)request,"\"MassageMode\":")) //按摩模式命令
+    {  
+        p = strstr((char *)request,"\"MassageMode\":");
+        temp = *(p+14)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X15,temp),32);          }
     else
     {
         ret = -1;
