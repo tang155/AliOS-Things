@@ -74,6 +74,7 @@ uint8_t tub_shower = 0;//浴缸花洒开关
 uint8_t tub_drain = 0;//浴缸排水开关
 uint16_t tub_temp = 15;//浴缸水温
 uint8_t tub_lock = 0;//浴缸童锁开关
+uint8_t command_resend_remain = 0;//命令重发剩余次数
 
 #include "aos/hal/uart.h"
 uint32_t Serial_read(char* inbuf,int cnt)
@@ -309,26 +310,31 @@ static int user_property_set_event_handler(const int devid, const char *request,
     {  
         p = strstr((char *)payload,"Faucet\":");
         tub_faucet = *(p+8)-0x30;
+        command_resend_remain = 2;//重发设置
     }
     else if(strstr((char *)payload,"Shower\":")) //浴缸花洒开关命令
     {  
         p = strstr((char *)payload,"Shower\":");
         tub_shower = *(p+8)-0x30;
+        command_resend_remain = 2;//重发设置
     }
     else if(strstr((char *)payload,"Drain\":")) //浴缸排水开关命令
     {  
         p = strstr((char *)payload,"Drain\":");
         tub_drain = *(p+7)-0x30;
+        command_resend_remain = 2;//重发设置
     }
     else if(strstr((char *)payload,"TubWaterTemp\":")) //浴缸水温命令
     {  
         p = strstr((char *)payload,"TubWaterTemp\":");
         tub_temp = ((*(p+14)-0x30)*10) + (*(p+15)-0x30);
+        command_resend_remain = 2;//重发设置
     }    
     else if(strstr((char *)payload,"TubLock\":")) //浴缸水温命令
     {  
         p = strstr((char *)payload,"TubLock\":");
         tub_lock = *(p+9)-0x30;
+        command_resend_remain = 2;//重发设置
     }
     
     else//不能处理的云端数据直接打印出来
@@ -672,18 +678,24 @@ int linkkit_main(void *paras)
                     {
                         temp[3] = 0x01;
                         temp[4] = tub_faucet;
+                        if(command_resend_remain!=0)command_resend_remain--;//重发
+                        else
                         tub_faucet += 100;//＋100表示命令已经处理了
                     }
                     else if(tub_shower < 5)//花洒新命令
                     {
                         temp[3] = 0x01;
                         temp[4] = tub_shower ?  2 : 0;
+                        if(command_resend_remain!=0)command_resend_remain--;//重发
+                        else
                         tub_shower += 100;//＋100表示命令已经处理了
                     }
                     else if(tub_drain < 5)//排水新命令
                     {
                         temp[3] = 0x02;
                         temp[4] = tub_drain;
+                        if(command_resend_remain!=0)command_resend_remain--;//重发
+                        else
                         tub_drain += 100;//＋100表示命令已经处理了
                     }
                     else if(tub_temp < 80)//温度设置新命令
@@ -692,12 +704,16 @@ int linkkit_main(void *paras)
                         temp[4] = 00;
                         temp[5] = (tub_temp*10)>>8;
                         temp[6] = (tub_temp*10);
-                        tub_temp *= 10;//＋100表示命令已经处理了
+                        if(command_resend_remain!=0)command_resend_remain--;//重发
+                        else
+                        tub_drain += 100;//＋100表示命令已经处理了
                     }
                     else if(tub_lock < 5)//童锁设置新命令
                     {
                         temp[3] = 0x09;
                         temp[4] = tub_lock;
+                        if(command_resend_remain!=0)command_resend_remain--;//重发
+                        else
                         tub_lock += 100;//＋100表示命令已经处理了
                     }
                     else

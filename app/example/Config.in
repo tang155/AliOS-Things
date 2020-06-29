@@ -10,11 +10,15 @@ if AOS_APP_ATHOSTAPP
     config AOS_BUILD_APP
         default "athostapp"
 endif
-
 source "app/example/blink/Config.in"
 if AOS_APP_BLINK
     config AOS_BUILD_APP
         default "blink"
+endif
+source "app/example/blink_test/Config.in"
+if AOS_APP_BLINK_TEST
+    config AOS_BUILD_APP
+        default "blink_test"
 endif
 
 source "app/example/bluetooth/bleadv/Config.in"
@@ -111,6 +115,18 @@ source "app/example/linkkitapp/Config.in"
 if AOS_APP_LINKKITAPP
     config AOS_BUILD_APP
         default "linkkitapp"
+endif
+
+source "app/example/malta_tub/Config.in"
+if AOS_APP_MALTA_TUB
+    config AOS_BUILD_APP
+        default "malta_tub"
+endif
+
+source "app/example/primus_plus/Config.in"
+if AOS_APP_PRIMUS_PLUS
+    config AOS_BUILD_APP
+        default "primus_plus"
 endif
 
 source "app/example/lorawan/linkwan/Config.in"

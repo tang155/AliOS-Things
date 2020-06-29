@@ -1,0 +1,9 @@
+config AOS_APP_BLINK_TEST
+    bool "Blink Sample"
+    select AOS_COMP_OSAL_AOS
+    help
+        blink sample
+
+if AOS_APP_BLINK_TEST
+# Configurations for app blink
+endif

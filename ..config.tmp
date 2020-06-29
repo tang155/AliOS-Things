@@ -304,6 +304,8 @@ deps_config := \
 	app/example/meshapp/Config.in \
 	app/example/lwm2mapp/Config.in \
 	app/example/lorawan/linkwan/Config.in \
+	app/example/primus_plus/Config.in \
+	app/example/malta_tub/Config.in \
 	app/example/linkkitapp/Config.in \
 	app/example/linkkit_gateway/Config.in \
 	app/example/itls_app/Config.in \
@@ -320,6 +322,7 @@ deps_config := \
 	app/example/bluetooth/bleperipheral/Config.in \
 	app/example/bluetooth/blemesh_tmall/Config.in \
 	app/example/bluetooth/bleadv/Config.in \
+	app/example/blink_test/Config.in \
 	app/example/blink/Config.in \
 	network/nal/athost/Config.in \
 	app/example/athostapp/Config.in \

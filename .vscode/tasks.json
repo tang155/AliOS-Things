@@ -7,7 +7,7 @@
       "command": "aos",
       "args": [
         "make",
-        "linkkitapp@esp8266",
+        "primus_plus@esp8266",
         "-c",
         "config"
       ],
@@ -32,7 +32,7 @@
       "command": "aos",
       "args": [
         "upload",
-        "linkkitapp@esp8266"
+        "primus_plus@esp8266"
       ],
       "presentation": {
         "focus": true
@@ -44,7 +44,7 @@
       "command": "aos",
       "args": [
         "debug",
-        "linkkitapp@esp8266"
+        "primus_plus@esp8266"
       ],
       "presentation": {
         "focus": true
@@ -82,7 +82,7 @@
       "command": "aos",
       "args": [
         "ota",
-        "linkkitapp@esp8266",
+        "primus_plus@esp8266",
         "-d",
         "",
         "-p",

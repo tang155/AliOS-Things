@@ -2,7 +2,7 @@ menuconfig AOS_COMP_CLI
     bool "Command-Line Interface"
     select AOS_COMP_DEBUG
     select AOS_COMP_ULOG
-    default n
+    default y
     help
       command-line interface
 
