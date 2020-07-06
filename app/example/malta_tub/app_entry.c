@@ -512,6 +512,7 @@ int application_start(int argc, char **argv)
 #ifdef MDAL_MAL_ICA_TEST
     HAL_MDAL_MAL_Init();
 #endif
+    UART_SetBaudrate(0,19200);//------jintang 修改，马尔它浴缸波特率19200
 
     aos_set_log_level(AOS_LL_DEBUG);
     set_iotx_info();
