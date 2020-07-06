@@ -678,7 +678,9 @@ int linkkit_main(void *paras)
                 {
                     printf("do_awss_reset()");//---jintang modify
                     extern  void do_awss_reset();
-                    do_awss_reset();
+                    // do_awss_reset();
+                    aos_schedule_call(do_awss_reset, NULL);
+
                 }
                 else if((temp[3] == 0x00))//查询命令
                 {
@@ -778,7 +780,7 @@ int linkkit_main(void *paras)
             else if(strstr((char *)temp,"reset")) //马桶清除配网命令
             {                     
                 printf("do_awss_reset()");//---jintang modify
-                // extern  void do_awss_reset();
+                extern  void do_awss_reset();
                 // do_awss_reset();
                 aos_schedule_call(do_awss_reset, NULL);
             }

@@ -5,7 +5,7 @@
             "name": "Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/out/primus_plus@esp8266/binary/primus_plus@esp8266.elf",
+            "program": "${workspaceRoot}/out/malta_tub@esp8266/binary/malta_tub@esp8266.elf",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${workspaceRoot}",
@@ -22,7 +22,7 @@
                     "text": "target remote localhost:4242"
                 },
                 {
-                    "text": "file out/primus_plus@esp8266/binary/primus_plus@esp8266.elf"
+                    "text": "file out/malta_tub@esp8266/binary/malta_tub@esp8266.elf"
                 },
                 {
                     "text": "break application_start"

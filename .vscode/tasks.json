@@ -7,7 +7,7 @@
       "command": "aos",
       "args": [
         "make",
-        "primus_plus@esp8266",
+        "malta_tub@esp8266",
         "-c",
         "config"
       ],
@@ -32,7 +32,7 @@
       "command": "aos",
       "args": [
         "upload",
-        "primus_plus@esp8266"
+        "malta_tub@esp8266"
       ],
       "presentation": {
         "focus": true
@@ -44,7 +44,7 @@
       "command": "aos",
       "args": [
         "debug",
-        "primus_plus@esp8266"
+        "malta_tub@esp8266"
       ],
       "presentation": {
         "focus": true
@@ -82,7 +82,7 @@
       "command": "aos",
       "args": [
         "ota",
-        "primus_plus@esp8266",
+        "malta_tub@esp8266",
         "-d",
         "",
         "-p",
