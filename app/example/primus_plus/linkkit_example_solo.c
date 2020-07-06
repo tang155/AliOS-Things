@@ -357,6 +357,8 @@ static int user_service_request_event_handler(const int devid, const char *servi
     int ret = -1;
     cJSON *root = NULL, *item_number_a = NULL, *item_number_b = NULL;
     const char *response_fmt = "{\"Result\": %d}";
+    char temp=0;    
+    char *p;
     // EXAMPLE_TRACE("Service Request Received, Service ID: %s, Payload: %s", serviceid, request);
 
     // /* Parse Root */
@@ -432,6 +434,12 @@ static int user_service_request_event_handler(const int devid, const char *servi
     else if(strstr((char *)serviceid,"MassageCycleService")) //循环按摩命令
     {  
         Serial_write(serial_data_of_bt_rf_command_excute(0X15,0x08),32);
+    }    
+    else if(strstr((char *)serviceid,"MassageMode\":")) //按摩模式选择命令
+    {  
+        p = strstr((char *)request,"MassageMode\":");
+        temp = *(p+13)-0x30;
+        Serial_write(serial_data_of_bt_rf_command_excute(0X15,temp),32);       
     }
     else
     {
@@ -653,7 +661,7 @@ int linkkit_main(void *paras)
     } while (1);
     printf("------jintang IOT_Linkkit_Connect() done %d\r\n",500);
     printf("------jintang cli_task_cancel\r\n");
-    cli_task_cancel();//jintang modify for malta 云浴缸
+    cli_task_cancel();//jintang modify for malta 云浴缸,工作后不接受CLI指令
     while (1) {
         static uint8_t temp[32];
         uint8_t recv_cnt = 0;
@@ -766,6 +774,12 @@ int linkkit_main(void *paras)
                 temp[30] = 0x0f;
                 temp[31] = 0x04;
                 Serial_write(temp,32);      
+            }
+            else if(strstr((char *)temp,"reset")) //马桶清除配网命令
+            {                     
+                printf("do_awss_reset()");//---jintang modify
+                extern  void do_awss_reset();
+                do_awss_reset();
             }
         }
 
